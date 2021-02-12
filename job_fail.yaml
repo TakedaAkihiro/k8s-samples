@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: myjob-fail
+  namespace: guest00
+spec:
+  template:
+    spec:
+      containers:
+      - name: fail-job
+        image: busybox
+        command: [”hello"]
+      restartPolicy: Never
+  completions: 5
+  backoffLimit: 4
