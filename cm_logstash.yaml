@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-conf
+  namespace: guest00
+data:
+  syslog: |
+    input {
+        file {
+            mode => "tail"
+            path => ["/var/log/syslog"]
+            start_position => "beginning"
+            codec => plain { 
+                charset => "UTF-8"
+            }
+        }
+    }
+
+    output {
+      stdout {
+        codec => rubydebug
+      }
+    }

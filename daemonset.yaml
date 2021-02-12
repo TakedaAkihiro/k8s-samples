@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logstash
+  namespace: guest00
+spec:
+  selector:
+    matchLabels:
+      name: logstash
+  template:
+    metadata:
+      labels:
+        name: logstash
+    spec:
+      tolerations:
+      # this toleration is to have the daemonset runnable on master nodes
+      # remove it if your masters can't run pods
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: logstash
+        image: docker.elastic.co/logstash/logstash:7.10.2
+        volumeMounts:
+        - name: syslog
+          mountPath: /var/log/syslog
+        - name: syslog-logstash-conf
+          mountPath: /usr/share/logstash/pipeline/
+      volumes:
+      - name: syslog
+        hostPath:
+          path: /var/log/syslog
+      - name: syslog-logstash-conf
+        configMap:
+          name: logstash-conf
+          items:
+            - key: syslog
+              path: syslog.conf
